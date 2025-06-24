@@ -47,8 +47,6 @@ opus is the FUTURE of how humans interact with your computers. now just install 
 
 _________________________
 
-The README needs a comprehensive setup guide for both development and production environments on Windows and macOS. Here's the proposed addition to the README:
-
 ## Setup Guide
 
 ### Prerequisites
