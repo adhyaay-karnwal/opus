@@ -1,6 +1,6 @@
-# opus
+# Monarch
 
-In Latin, **"opus"** means:
+In Latin, **"Monarch"** means:
 
 - **"work"** (as in a task, labor, or artistic creation)
 - It can refer to a **physical effort**, a **literary/musical/artistic piece**, or even a **building/construction**.
@@ -9,13 +9,13 @@ In Latin, **"opus"** means:
 
 - **Noun (neuter)**
 - Declension: **3rd**
-- Singular: _opus_
+- Singular: _Monarch_
 - Plural: _opera_
 
 ### Common phrases:
 
-- **"magnum opus"** – greatest work/masterpiece
-- **"opus Dei"** – work of God
+- **"magnum Monarch"** – greatest work/masterpiece
+- **"Monarch Dei"** – work of God
 
 ## the problem
 are you eating right now? clearly not. But let’s say you were. you’re holding a burger in one hand and a shawarma in the other. then you wanted to open the most recent Garf510 video on YouTube for some mealtime entertainment. what would you do huh? you’d be in a real pickle wouldn’t you eh? 
@@ -25,25 +25,25 @@ you can’t open youtube without using your fingers, and you don’t want to tou
 for too long, humans have lived in a world where they can’t click youtube videos and control their computer while they’re eating two different things at once. that changes today.
 
 ## the solution
-introducing opus: the ultimate, hands-free ai agent that can do ANYTHING on your computer. by using mouse and keyboard clicks as well as scripting, you can perform and automate any action using just one prompt. 
+introducing Monarch: the ultimate, hands-free ai agent that can do ANYTHING on your computer. by using mouse and keyboard clicks as well as scripting, you can perform and automate any action using just one prompt. 
 
-hands full? simply use your voice to send a verbal prompt, and opus will be able to transcribe your voice and execute your command.
+hands full? simply use your voice to send a verbal prompt, and Monarch will be able to transcribe your voice and execute your command.
 
 ## how it works
-opus takes context from:
+Monarch takes context from:
 - your installed apps
 - the current screen (screenshot)
 - the last 5 actions you’ve taken
 it takes this information along with your prompt and feeds it into a series of ai agents that each have specialized roles.
 
-opus will then choose from the following actions:
+Monarch will then choose from the following actions:
 - running an applescript
 - clicking an accessibility ui element
 - keypress
 - mouse click
 to accomplish your task.
 
-opus is the FUTURE of how humans interact with your computers. now just install opus, break your keyboard in half, and eat your burgers in both hands.
+Monarch is the FUTURE of how humans interact with your computers. now just install Monarch, break your keyboard in half, and eat your burgers in both hands.
 
 _________________________
 
@@ -60,8 +60,8 @@ _________________________
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/adhyaay-karnwal/opus.git
-cd opus
+git clone https://github.com/adhyaay-karnwal/Monarch.git
+cd Monarch
 ```
 
 2. Create a `.env` file in the root directory with required environment variables.
@@ -84,8 +84,8 @@ yarn dev
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/adhyaay-karnwal/opus.git
-cd opus
+git clone https://github.com/adhyaay-karnwal/Monarch.git
+cd Monarch
 ```
 
 2. Create a `.env` file in the root directory with required environment variables.
