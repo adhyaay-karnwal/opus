@@ -13,13 +13,23 @@ export async function takeAndSaveScreenshots(
     "takeAndSaveScreenshots",
     `Taking screenshot of app window for app: ${appName}`
   );
-  const { stdout: swiftWindowsStdout } = await execPromise(
-    `swift swift/windows.swift`
-  );
-  logWithElapsed("takeAndSaveScreenshots", `Got swift windows`);
-  const swiftWindows = JSON.parse(swiftWindowsStdout).filter(
+  let windows: Window[] = [];
+  if (process.platform === "darwin") {
+    const { stdout: swiftWindowsStdout } = await execPromise(
+      `swift swift/windows.swift`
+    );
+    windows = JSON.parse(swiftWindowsStdout);
+  } else if (process.platform === "win32") {
+    const { stdout: psWindowsStdout } = await execPromise(
+      `powershell -ExecutionPolicy Bypass -File app/powershell/windows.ps1`
+    );
+    windows = JSON.parse(psWindowsStdout);
+  }
+
+  const filteredWindows = windows.filter(
     (window: Window) => window.app === appName
   );
+
   const sources = await desktopCapturer.getSources({
     types: ["window"],
     fetchWindowIcons: true,
@@ -27,7 +37,7 @@ export async function takeAndSaveScreenshots(
   });
   logWithElapsed("takeAndSaveScreenshots", `Got desktop sources`);
   const matchingPairs = [];
-  for (const window of swiftWindows) {
+  for (const window of filteredWindows) {
     const source = sources.find(
       (s) => typeof s.name === "string" && s.name === window.name
     );

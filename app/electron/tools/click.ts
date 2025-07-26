@@ -11,8 +11,7 @@ export interface ClickReturnType {
 
 export default async function click(
   body: string,
-  clickableElements: Element[],
-  bundleId: string
+  clickableElements: Element[]
 ): Promise<ClickReturnType> {
   const id = body;
   const element = clickableElements.find((el) => {
@@ -28,8 +27,13 @@ export default async function click(
       `Clicked element info: ${JSON.stringify(element)}`
     );
   }
+
   try {
-    await execPromise(`swift swift/click.swift ${bundleId} ${id}`);
+    if (process.platform === "darwin") {
+      await execPromise(`swift swift/click.swift ${id}`);
+    } else if (process.platform === "win32") {
+      await execPromise(`powershell -ExecutionPolicy Bypass -File app/powershell/click.ps1 -automationId ${id}`);
+    }
     logWithElapsed("performAction", `Executed click for id: ${id}`);
     return { type: "click", id, element: element || null };
   } catch (error) {

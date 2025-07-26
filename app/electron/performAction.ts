@@ -1,4 +1,4 @@
-import runAppleScript from "./tools/appleScript";
+import runScript from "./tools/script";
 import runBashScript from "./tools/bash";
 import click from "./tools/click";
 import key from "./tools/key";
@@ -8,7 +8,7 @@ import { logWithElapsed } from "./utils/utils";
 
 export async function performAction(
   action: string,
-  bundleId: string,
+  appName: string,
   clickableElements: Element[],
   event: Electron.IpcMainEvent
 ): Promise<ActionResult | ActionResult[]> {
@@ -24,7 +24,7 @@ export async function performAction(
       // Remove leading/trailing whitespace
       const res = await performAction(
         cmd.trim(),
-        bundleId,
+        appName,
         clickableElements,
         event
       );
@@ -39,8 +39,8 @@ export async function performAction(
   const body = match ? match[2] : "";
 
   switch (address) {
-    case "=Applescript": {
-      const res = await runAppleScript(body);
+    case "=Script": {
+      const res = await runScript(body);
       if (res.error) {
         event.sender.send("reply", {
           type: "action",
@@ -81,7 +81,7 @@ export async function performAction(
     }
 
     case "=Key": {
-      const res = await key(body, bundleId);
+      const res = await key(body, appName);
       event.sender.send("reply", {
         type: "action",
         message: `Sent key: ${res.keyString}`,
@@ -90,7 +90,7 @@ export async function performAction(
     }
 
     case "=Click": {
-      const res = await click(body, clickableElements, bundleId);
+      const res = await click(body, clickableElements);
       if (!res.error) {
         event.sender.send("reply", {
           type: "action",

@@ -1,84 +1,37 @@
-import * as fs from "node:fs";
-import * as path from "node:path";
 import { execPromise, logWithElapsed } from "./utils";
 import { Element } from "../types";
+import * as fs from "node:fs";
+import * as path from "node:path";
+
+export interface GetClickableElementsReturnType {
+  clickableElements: Element[];
+}
 
 export async function getClickableElements(
-  bundleId: string,
   stepFolder: string
-): Promise<{ clickableElements: Element[] }> {
-  logWithElapsed(
-    "getClickableElements",
-    `Getting clickable elements for bundleId: ${bundleId}`
+): Promise<GetClickableElementsReturnType> {
+  let scriptPath = "";
+  if (process.platform === "darwin") {
+    scriptPath = "swift/accessibility.swift";
+  } else if (process.platform === "win32") {
+    scriptPath = "app/powershell/accessibility.ps1";
+  }
+
+  if (scriptPath === "") {
+    throw new Error("Unsupported platform");
+  }
+
+  const { stdout } = await execPromise(
+    process.platform === "win32"
+      ? `powershell -ExecutionPolicy Bypass -File ${scriptPath}`
+      : `swift ${scriptPath} json-list`
   );
-  const { stdout } = await execPromise(`swift swift/click.swift ${bundleId}`);
-  let clickableElements;
-  try {
-    clickableElements = JSON.parse(stdout);
-    logWithElapsed("getClickableElements", `Parsed clickable elements`);
-  } catch (err) {
-    logWithElapsed("getClickableElements", `JSON parse error: ${stdout}`);
-    throw new Error(stdout);
-  }
-  if (
-    typeof clickableElements === "string" &&
-    clickableElements.match(/App not running|Error|not found|failed/i)
-  ) {
-    logWithElapsed(
-      "getClickableElements",
-      `Error in clickable elements: ${clickableElements}`
-    );
-    throw new Error(clickableElements);
-  }
 
-  if (clickableElements.length < 5) {
-    console.log("Could not get elements. Enabling accessibility");
-    await execPromise(`swift swift/manualAccessibility.swift ${bundleId}`);
-    const { stdout: windowStdout } = await execPromise(
-      `swift swift/windows.swift ${bundleId}`
-    );
-    const windows = JSON.parse(windowStdout);
-    const window = windows[0];
-    if (!window) {
-      console.log("no windows found");
-      return { clickableElements };
-    }
-    // TODO: multi window support
-    // for (const window of windows) {
-    const { stdout: coordsStdout } = await execPromise(
-      `swift swift/moveToOpusDisplay.swift ${window.pid} "${window.name}"`
-    );
-    console.log("moved window");
-    // fetch elements again
-    const { stdout } = await execPromise(`swift swift/click.swift ${bundleId}`);
-    try {
-      clickableElements = JSON.parse(stdout);
-      logWithElapsed("getClickableElements", `Parsed clickable elements`);
-    } catch (err) {
-      logWithElapsed("getClickableElements", `JSON parse error: ${stdout}`);
-      throw new Error(stdout);
-    }
-    if (
-      typeof clickableElements === "string" &&
-      clickableElements.match(/App not running|Error|not found|failed/i)
-    ) {
-      logWithElapsed(
-        "getClickableElements",
-        `Error in clickable elements: ${clickableElements}`
-      );
-      throw new Error(clickableElements);
-    }
-    await execPromise(
-      `swift swift/moveToCoords.swift ${window.pid} "${window.name}" ${coordsStdout}`
-    );
-    console.log("moved back");
-    // }
-  }
-
+  const clickableElements = JSON.parse(stdout);
   fs.writeFileSync(
-    path.join(stepFolder, "clickableElements.json"),
+    path.join(stepFolder, "clickable_elements.json"),
     JSON.stringify(clickableElements, null, 2)
   );
-  logWithElapsed("getClickableElements", `Saved clickableElements.json`);
+  logWithElapsed("getClickableElements", "Got clickable elements");
   return { clickableElements };
 }

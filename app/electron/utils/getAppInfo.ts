@@ -1,6 +1,6 @@
 import { run } from "@openai/agents";
 import { appSelectionAgent } from "../ai/initAgents";
-import { execPromise, logWithElapsed } from "./utils";
+import { logWithElapsed } from "./utils";
 
 export async function getAppName(userPrompt: string) {
   logWithElapsed(
@@ -25,9 +25,3 @@ export async function getAppName(userPrompt: string) {
     : undefined;
 }
 
-export async function getBundleId(appName: string) {
-  logWithElapsed("getBundleId", `Getting bundle id for app: ${appName}`);
-  const { stdout } = await execPromise(`osascript -e 'id of app "${appName}"'`);
-  logWithElapsed("getBundleId", `Bundle id result: ${stdout.trim()}`);
-  return stdout.trim();
-}

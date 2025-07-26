@@ -1,4 +1,4 @@
-import { AppleScriptReturnType } from "./tools/appleScript";
+import { ScriptReturnType } from "./tools/script";
 import { BashScriptReturnType } from "./tools/bash";
 import { ClickReturnType } from "./tools/click";
 import { KeyReturnType } from "./tools/key";
@@ -22,7 +22,7 @@ export interface Element {
 }
 
 export type ActionResult =
-  | AppleScriptReturnType
+  | ScriptReturnType
   | OpenUriReturnType
   | BashScriptReturnType
   | ClickReturnType

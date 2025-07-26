@@ -33,13 +33,16 @@ function createWindow() {
     resizable: false,
     trafficLightPosition: { x: -100, y: -100 },
     alwaysOnTop: false,
-    ...(process.platform === "darwin"
-      ? {
+    ...((() => {
+      if (process.platform === "darwin") {
+        return {
           autoHideMenuBar: true,
           titleBarStyle: "hiddenInset",
           frame: false,
-        }
-      : {}),
+        };
+      }
+      return {};
+    })()),
     webPreferences: {
       contextIsolation: true,
       preload: path.join(__dirname, "preload.mjs"),
@@ -74,15 +77,15 @@ app.on("activate", () => {
 });
 
 app.whenReady().then(() => {
-  if (ENV == "DEV") {
-    execFile(
-      "./swift/virtualdisplay/DerivedData/virtualdisplay/Build/Products/Debug/virtualdisplay",
-      ["dev"]
-    );
-    console.log("virtual display");
-  }
-  // TODO: prod version
   if (process.platform === "darwin") {
+    if (ENV == "DEV") {
+      execFile(
+        "./swift/virtualdisplay/DerivedData/virtualdisplay/Build/Products/Debug/virtualdisplay",
+        ["dev"]
+      );
+      console.log("virtual display");
+    }
+    // TODO: prod version
     const icon = nativeImage.createFromPath(
       path.join(process.env.VITE_PUBLIC, "click.png")
     );

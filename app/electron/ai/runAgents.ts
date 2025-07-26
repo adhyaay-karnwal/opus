@@ -153,19 +153,19 @@ Start your response with =Click to use this tool.`
     if ("role" in item) {
       if (item.role === "user") {
         if (Array.isArray(item.content)) {
-          const textContent = item.content.find((c: any) => c.type === "input_text")?.text || "";
-          const imageContent = item.content.find((c: any) => c.type === "input_image");
+          const textContent = item.content.find((c) => c.type === "input_text" && "text" in c) as { type: "input_text", text: string } | undefined;
+          const imageContent = item.content.find((c) => c.type === "input_image");
           
           if (imageContent) {
             messages.push({
               role: "user",
               content: [
-                { type: "text", text: textContent },
+                { type: "text", text: textContent ? textContent.text : "" },
                 { type: "image_url", image_url: { url: (imageContent as any).image } }
               ]
             });
           } else {
-            messages.push({ role: "user", content: textContent });
+            messages.push({ role: "user", content: textContent ? textContent.text : "" });
           }
         } else {
           messages.push({ role: "user", content: item.content as string });

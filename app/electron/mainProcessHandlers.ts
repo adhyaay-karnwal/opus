@@ -1,7 +1,7 @@
 import { BrowserWindow, ipcMain, Notification, screen } from "electron";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { getAppName, getBundleId } from "./utils/getAppInfo";
+import { getAppName } from "./utils/getAppInfo";
 import { getClickableElements } from "./utils/getClickableElements";
 import { runActionAgentStreaming } from "./ai/runAgents";
 import { takeAndSaveScreenshots } from "./utils/screenshots";
@@ -56,7 +56,11 @@ export function setupMainHandlers({ win }: { win: BrowserWindow | null }) {
     let appName;
     try {
       appName = await getAppName(userPrompt);
-      await execPromise(`open -ga "${appName}"`);
+      if (process.platform === "darwin") {
+        await execPromise(`open -ga "${appName}"`);
+      } else if (process.platform === "win32") {
+        await execPromise(`start "" "${appName}"`);
+      }
     } catch {
       logWithElapsed("setupMainHandlers", "Could not determine app");
       event.sender.send("reply", {
@@ -74,21 +78,6 @@ export function setupMainHandlers({ win }: { win: BrowserWindow | null }) {
       });
       return;
     }
-    let bundleId;
-    try {
-      bundleId = await getBundleId(appName);
-      logWithElapsed("setupMainHandlers", `Got bundleId: ${bundleId}`);
-    } catch {
-      logWithElapsed(
-        "setupMainHandlers",
-        `Could not get bundle id for ${appName}`
-      );
-      event.sender.send("reply", {
-        type: "error",
-        message: `Could not get bundle id for ${appName}`,
-      });
-      return;
-    }
     const mainLogFolder = createLogFolder(userPrompt);
     console.log("\n");
 
@@ -101,7 +90,7 @@ export function setupMainHandlers({ win }: { win: BrowserWindow | null }) {
       }
       let clickableElements;
       try {
-        const result = await getClickableElements(bundleId, stepFolder);
+        const result = await getClickableElements(stepFolder);
         clickableElements = result.clickableElements;
         console.log("found " + clickableElements.length + " elements");
         logWithElapsed("setupMainHandlers", "Got clickable elements");
@@ -146,7 +135,7 @@ export function setupMainHandlers({ win }: { win: BrowserWindow | null }) {
           // Execute tool call
           const actionResult = await performAction(
             `=${toolName}\n${args}`,
-            bundleId,
+            appName,
             clickableElements,
             event
           );

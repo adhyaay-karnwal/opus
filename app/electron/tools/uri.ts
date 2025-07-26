@@ -8,7 +8,11 @@ export interface OpenUriReturnType {
 export async function openUri(body: string): Promise<OpenUriReturnType> {
   const uri = body;
   try {
-    await execPromise(`open -g ${uri}`);
+    if (process.platform === "darwin") {
+      await execPromise(`open -g ${uri}`);
+    } else if (process.platform === "win32") {
+      await execPromise(`start /min ${uri}`);
+    }
     return { type: "uri", error: "" };
   } catch (error) {
     const { stderr } = error as ExecException;

@@ -6,10 +6,14 @@ export interface KeyReturnType {
 }
 export default async function key(
   body: string,
-  bundleId: string
+  appName: string
 ): Promise<KeyReturnType> {
   const keyString = body;
-  await execPromise(`swift swift/key.swift ${bundleId} "${keyString}"`);
+  if (process.platform === "darwin") {
+    await execPromise(`swift swift/key.swift ${appName} "${keyString}"`);
+  } else if (process.platform === "win32") {
+    await execPromise(`powershell -ExecutionPolicy Bypass -File app/powershell/key.ps1 -appName "${appName}" -keyString "${keyString}"`);
+  }
   logWithElapsed("performAction", `Executed key: ${keyString}`);
   return { type: "key", keyString };
 }
